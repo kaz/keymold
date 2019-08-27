@@ -10,12 +10,16 @@ const (
 	FLAG_DISABLE_TOUCH_ID = "disable-touch-id"
 )
 
+var (
+	Version = "dev-build"
+)
+
 func Start() error {
 	app := cli.NewApp()
 
 	app.Name = "keymold"
-	app.Version = "0.0.1" // TODO: Specify on build process
-	app.Description = "OTP generator, works on command line."
+	app.Version = Version
+	app.Usage = "OTP generator, works on command line."
 
 	app.Commands = []cli.Command{
 		{
