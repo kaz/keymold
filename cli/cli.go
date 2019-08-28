@@ -42,6 +42,13 @@ func Start() error {
 			ArgsUsage: "key_name",
 			Action:    GetCode,
 		},
+		{
+			Name:      "proxy",
+			ShortName: "p",
+			Usage:     "create SSH proxy tunnel",
+			ArgsUsage: "key_name bastion_dest target_dest",
+			Action:    CreateProxy,
+		},
 	}
 
 	return app.Run(os.Args)

@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/kaz/keymold/otp"
-	"github.com/lox/go-touchid"
+	"github.com/kaz/keymold/ssh"
 	"github.com/urfave/cli"
 )
 
@@ -37,24 +37,35 @@ func GetCode(context *cli.Context) error {
 		return fmt.Errorf("key_name is empty (see --help)")
 	}
 
-	secret, err := otp.LoadSecret(keyName)
+	code, err := getCode(keyName, "Get OTP")
 	if err != nil {
-		return fmt.Errorf("loading secret failed: %v", err)
-	}
-
-	if v, ok := secret.Options[FLAG_DISABLE_TOUCH_ID]; !ok || !v.(bool) {
-		if ok, err = touchid.Authenticate("Generate OTP Code"); err != nil {
-			return fmt.Errorf("TouchID authentication failed with error: %v", err)
-		} else if !ok {
-			return fmt.Errorf("TouchID authentication failed")
-		}
-	}
-
-	code, err := secret.GetCode()
-	if err != nil {
-		return fmt.Errorf("generating code failed: %v", err)
+		return fmt.Errorf("OTP generation failed: %v", err)
 	}
 
 	fmt.Print(code)
 	return nil
+}
+
+func CreateProxy(context *cli.Context) error {
+	keyName := context.Args().Get(0)
+	if keyName == "" {
+		return fmt.Errorf("key_name is empty (see --help)")
+	}
+
+	bastionDest := context.Args().Get(1)
+	if bastionDest == "" {
+		return fmt.Errorf("bastion_dest is empty (see --help)")
+	}
+
+	targetDest := context.Args().Get(2)
+	if targetDest == "" {
+		return fmt.Errorf("target_dest is empty (see --help)")
+	}
+
+	code, err := getCode(keyName, "Connect SSH server")
+	if err != nil {
+		return fmt.Errorf("OTP generation failed: %v", err)
+	}
+
+	return ssh.Pipe(bastionDest, targetDest, code)
 }
