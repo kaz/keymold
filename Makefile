@@ -1,4 +1,4 @@
-VERSION:=0.1.0
+VERSION:=0.2.0
 
 keymold:
 	go build -ldflags "-w -s -X $$(head -n1 go.mod | awk '{print $$2}')/cli.Version=$(VERSION)"
