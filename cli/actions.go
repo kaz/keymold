@@ -12,7 +12,7 @@ import (
 func AddSecret(context *cli.Context) error {
 	keyName := context.Args().Get(0)
 	if keyName == "" {
-		return fmt.Errorf("key_name is empty (see --help)")
+		keyName = DEFAULT_KEY_NAME
 	}
 
 	secretValue := ""
@@ -34,7 +34,7 @@ func AddSecret(context *cli.Context) error {
 func GetCode(context *cli.Context) error {
 	keyName := context.Args().Get(0)
 	if keyName == "" {
-		return fmt.Errorf("key_name is empty (see --help)")
+		keyName = DEFAULT_KEY_NAME
 	}
 
 	code, err := getCode(keyName, "Get OTP")
@@ -49,17 +49,7 @@ func GetCode(context *cli.Context) error {
 func CreateProxy(context *cli.Context) error {
 	keyName := context.Args().Get(0)
 	if keyName == "" {
-		return fmt.Errorf("key_name is empty (see --help)")
-	}
-
-	bastionDest := context.Args().Get(1)
-	if bastionDest == "" {
-		return fmt.Errorf("bastion_dest is empty (see --help)")
-	}
-
-	targetDest := context.Args().Get(2)
-	if targetDest == "" {
-		return fmt.Errorf("target_dest is empty (see --help)")
+		keyName = DEFAULT_KEY_NAME
 	}
 
 	code, err := getCode(keyName, "Connect SSH server")
@@ -67,5 +57,5 @@ func CreateProxy(context *cli.Context) error {
 		return fmt.Errorf("OTP generation failed: %v", err)
 	}
 
-	return ssh.Pipe(bastionDest, targetDest, code)
+	return ssh.Pipe(context.String(FLAG_BASTION), context.String(FLAG_TARGET), code)
 }

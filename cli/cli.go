@@ -7,7 +7,14 @@ import (
 )
 
 const (
+	DEFAULT_KEY_NAME = "keymold_default_key_name"
+
 	FLAG_DISABLE_TOUCH_ID = "disable-touch-id"
+
+	FLAG_BASTION       = "bastion"
+	FLAG_BASTION_SHORT = "b"
+	FLAG_TARGET        = "target"
+	FLAG_TARGET_SHORT  = "t"
 )
 
 var (
@@ -29,7 +36,7 @@ func Start() error {
 			Flags: []cli.Flag{
 				cli.BoolFlag{
 					Name:  FLAG_DISABLE_TOUCH_ID,
-					Usage: "allow generating OTP without TouchID authentication (insecure)",
+					Usage: "Allow generating OTP without TouchID authentication. (insecure!)",
 				},
 			},
 			ArgsUsage: "key_name",
@@ -46,7 +53,19 @@ func Start() error {
 			Name:      "proxy",
 			ShortName: "p",
 			Usage:     "create SSH proxy tunnel",
-			ArgsUsage: "key_name bastion_dest target_dest",
+			Flags: []cli.Flag{
+				cli.StringFlag{
+					Name:     FLAG_BASTION_SHORT + "," + FLAG_BASTION,
+					Usage:    "Destination of bastion server. example: [USER_NAME@]HOST_NAME[:PORT]",
+					Required: true,
+				},
+				cli.StringFlag{
+					Name:     FLAG_TARGET_SHORT + "," + FLAG_TARGET,
+					Usage:    "Destination of target server. example: [USER_NAME@]HOST_NAME[:PORT]",
+					Required: true,
+				},
+			},
+			ArgsUsage: "key_name",
 			Action:    CreateProxy,
 		},
 	}
